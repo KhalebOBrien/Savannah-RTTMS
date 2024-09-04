@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { CustomError } from './CustomErrorMiddleware';
+import { CustomError } from './CustomError';
 import { apiResponse } from '../../infrastructure/http/response/ApiResponse';
 import { StatusCodes } from 'http-status-codes';
 import { logger } from '../../infrastructure/logger/Logger';
 
-export class ErrorMiddleware {
+export class ErrorHnadler {
   public static handleError(
     error: Error | unknown,
     req: Request<any, any, any, any>,

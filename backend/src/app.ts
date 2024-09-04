@@ -36,7 +36,7 @@ app.use('/api/tasks', TaskRoutes);
 
 // MongoDB connection
 mongoose
-  .connect(process.env.DB_URI || 'mongodb://localhost:27017/taskmanager', {
+  .connect(process.env.DB_URI as string, {
     // useNewUrlParser: true,
     // useUnifiedTopology: true,
   })
