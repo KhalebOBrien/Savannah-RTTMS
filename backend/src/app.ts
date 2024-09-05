@@ -16,23 +16,19 @@ const io = new SocketIOServer(server, {
   },
 });
 
-// Middleware for JSON parsing
 app.use(express.json());
 
 io.on('connection', (socket) => {
   console.log('New WebSocket connection');
 
-  // Example event handling
   socket.on('disconnect', () => {
     console.log('WebSocket disconnected');
   });
 });
 
-export { io };
-
 // Routes
-app.use('/api/auth', AuthRoutes);
-app.use('/api/tasks', TaskRoutes);
+app.use('/api/v1/auth', AuthRoutes);
+app.use('/api/v1/tasks', TaskRoutes(io));
 
 // MongoDB connection
 mongoose
