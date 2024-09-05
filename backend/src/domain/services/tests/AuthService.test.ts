@@ -75,4 +75,64 @@ describe('AuthService', () => {
     ).rejects.toThrow('User already exists');
   });
 
+  it('should login a user and return a JWT token', async () => {
+    const mockUser = new User(
+      'mock-id',
+      'testuser',
+      'test@example.com',
+      'hashed-password',
+    );
+
+    mockUserRepository.findByEmail.mockResolvedValue(mockUser);
+
+    bcrypt.compare.mockResolvedValue(true);
+
+    const token = await authService.login('test@example.com', 'password123');
+
+    expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(
+      'test@example.com',
+    );
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      'password123',
+      'hashed-password',
+    );
+
+    expect(jwt.sign).toHaveBeenCalledWith(
+      { userId: mockUser.id, email: mockUser.email },
+      expect.any(String), // JWT secret
+      { expiresIn: expect.any(String) },
+    );
+
+    expect(token).toBe('fake-jwt-token');
+  });
+
+  it('should throw an error if user does not exist during login', async () => {
+    mockUserRepository.findByEmail.mockResolvedValue(null);
+
+    await expect(
+      authService.login('nonexistent@example.com', 'password123'),
+    ).rejects.toThrow('Invalid email or password');
+  });
+
+  it('should throw an error if password is incorrect during login', async () => {
+    const mockUser = new User(
+      'mock-id',
+      'testuser',
+      'test@example.com',
+      'hashed-password',
+    );
+
+    mockUserRepository.findByEmail.mockResolvedValue(mockUser);
+
+    bcrypt.compare.mockResolvedValue(false);
+
+    await expect(
+      authService.login('test@example.com', 'wrongpassword'),
+    ).rejects.toThrow('Invalid email or password');
+
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      'wrongpassword',
+      'hashed-password',
+    );
+  });
 });
