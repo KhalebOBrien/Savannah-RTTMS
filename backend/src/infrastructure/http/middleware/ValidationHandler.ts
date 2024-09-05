@@ -3,7 +3,7 @@ import { AnySchema } from 'yup';
 import { apiResponse } from '../response/ApiResponse';
 import { StatusCodes } from 'http-status-codes';
 
-export const validate =
+export const validateBody =
   (schema: AnySchema) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -14,6 +14,27 @@ export const validate =
         field: e.path,
         message: e.message,
       }));
-      res.status(StatusCodes.BAD_REQUEST).json(apiResponse('error', 'Validation error', errors));
+
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(apiResponse('error', 'Validation error', errors));
+    }
+  };
+
+export const validateParams =
+  (schema: AnySchema) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await schema.validate(req.params, { abortEarly: false });
+      next();
+    } catch (err: any) {
+      const errors = err.inner.map((e: any) => ({
+        field: e.path,
+        message: e.message,
+      }));
+
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(apiResponse('error', 'Validation error', errors));
     }
   };

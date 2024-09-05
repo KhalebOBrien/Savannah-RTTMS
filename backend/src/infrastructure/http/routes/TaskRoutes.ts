@@ -6,6 +6,8 @@ import { AuthMiddleware } from '../../../interface_adapters/middlewares/AuthMidd
 import { AuthService } from '../../../domain/services/AuthService';
 import { MongoUserRepository } from '../../../infrastructure/db/mongo/UserRepositoryImpl';
 import { Server as SocketIOServer } from 'socket.io';
+import { validateBody, validateParams } from '../middleware/ValidationHandler';
+import { taskIdSchema, taskSchema } from '../validations/TaskValidations';
 
 const TaskRoutes = (io: SocketIOServer) => {
   const taskRepository = new MongoTaskRepository();
@@ -20,12 +22,25 @@ const TaskRoutes = (io: SocketIOServer) => {
 
   router.use((req, res, next) => authMiddleware.authenticate(req, res, next));
 
-  router.post('/', (req, res) => taskController.createTask(req, res));
-  router.get('/:id', (req, res) => taskController.getTask(req, res));
-  router.put('/:id', (req, res) => taskController.updateTask(req, res));
-  router.delete('/:id', (req, res) => taskController.deleteTask(req, res));
-  router.get('/user/:userId', (req, res) =>
-    taskController.getTasksByUserId(req, res),
+  router.post('/', validateBody(taskSchema), (req, res) =>
+    taskController.createTask(req, res),
+  );
+
+  router.get('/', (req, res) => taskController.getTasksByUser(req, res));
+
+  router.get('/:id', validateParams(taskIdSchema), (req, res) =>
+    taskController.getTask(req, res),
+  );
+
+  router.put(
+    '/:id',
+    validateParams(taskIdSchema),
+    validateBody(taskSchema),
+    (req, res) => taskController.updateTask(req, res),
+  );
+
+  router.delete('/:id', validateParams(taskIdSchema), (req, res) =>
+    taskController.deleteTask(req, res),
   );
 
   return router;

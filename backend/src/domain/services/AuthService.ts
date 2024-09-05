@@ -1,13 +1,17 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { UserRepository } from "../repositories/UserRepository";
-import { User } from "../entities/User";
-import { jwtConfig } from "../../infrastructure/config/jwtConfig";
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { UserRepository } from '../repositories/UserRepository';
+import { User } from '../entities/User';
+import { jwtConfig } from '../../infrastructure/config/jwtConfig';
 
 export class AuthService {
   constructor(private userRepository: UserRepository) {}
 
-  async register(username: string, email: string, password: string): Promise<string> {
+  async register(
+    username: string,
+    email: string,
+    password: string,
+  ): Promise<string> {
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new Error('User already exists');
@@ -18,7 +22,7 @@ export class AuthService {
 
     return this.generateToken(createdUser);
   }
-  
+
   async login(email: string, password: string): Promise<string> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
@@ -33,11 +37,9 @@ export class AuthService {
   }
 
   private generateToken(user: User): string {
-    return jwt.sign(
-      { userId: user.id, username: user.username },
-      jwtConfig.secret,
-      { expiresIn: jwtConfig.expiresIn },
-    );
+    return jwt.sign({ userId: user.id, email: user.email }, jwtConfig.secret, {
+      expiresIn: jwtConfig.expiresIn,
+    });
   }
 
   async verifyToken(token: string): Promise<User | null> {

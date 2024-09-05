@@ -10,7 +10,8 @@ export class TaskController {
   constructor(private taskService: TaskService) {}
 
   async createTask(req: Request, res: Response): Promise<Response | void> {
-    const { title, description, completed, userId } = req.body;
+    const { title, description, completed } = req.body;
+    const { userId } = res.locals.user;
     try {
       const task = new Task('', title, description, completed, userId);
       const createdTask = await this.taskService.createTask(task);
@@ -73,11 +74,8 @@ export class TaskController {
     }
   }
 
-  async getTasksByUserId(
-    req: Request,
-    res: Response,
-  ): Promise<Response | void> {
-    const { userId } = req.params;
+  async getTasksByUser(req: Request, res: Response): Promise<Response | void> {
+    const { userId } = res.locals.user;
 
     try {
       const tasks = await this.taskService.getTasksByUserId(userId);

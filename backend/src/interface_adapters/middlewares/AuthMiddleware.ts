@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../../domain/services/AuthService';
+import { StatusCodes } from 'http-status-codes';
 
 export class AuthMiddleware {
   constructor(private authService: AuthService) {}
@@ -8,14 +9,18 @@ export class AuthMiddleware {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'Unauthorized' });
     }
 
     const token = authHeader.split(' ')[1];
     const user = await this.authService.verifyToken(token);
 
     if (!user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'Unauthorized' });
     }
 
     res.locals.user = user;
