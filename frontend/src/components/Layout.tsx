@@ -8,7 +8,7 @@ interface WrapperProps
 
 const LayoutWrapper: FC<WrapperProps> = ({ children, className }) => {
   return (
-    <main className={`bg-black h-screen text-white ${className}`}>
+    <main className={`bg-black min-h-screen text-white ${className}`}>
       {children}
     </main>
   );

@@ -49,6 +49,34 @@ export const createTask = createAsyncThunk(
   },
 );
 
+export const updateTask = createAsyncThunk(
+  'tasks/updateTask',
+  async (task: Task, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/tasks/${task.id}`, task);
+      return response.data.data.task;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to update task',
+      );
+    }
+  },
+);
+
+export const deleteTask = createAsyncThunk(
+  'tasks/deleteTask',
+  async (taskId: string, { rejectWithValue }) => {
+    try {
+      await api.delete(`/tasks/${taskId}`);
+      return taskId;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to delete task',
+      );
+    }
+  },
+);
+
 const taskSlice = createSlice({
   name: 'tasks',
   initialState,
@@ -56,7 +84,7 @@ const taskSlice = createSlice({
     addTask: (state, action: PayloadAction<Task>) => {
       state.tasks.push(action.payload);
     },
-    updateTask: (state, action: PayloadAction<Task>) => {
+    updateTaskLocally: (state, action: PayloadAction<Task>) => {
       const index = state.tasks.findIndex(
         (task) => task.id === action.payload.id,
       );
@@ -64,7 +92,7 @@ const taskSlice = createSlice({
         state.tasks[index] = action.payload;
       }
     },
-    deleteTask: (state, action: PayloadAction<string>) => {
+    deleteTaskLocally: (state, action: PayloadAction<string>) => {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
     },
     connectToSocket: (state, action: PayloadAction<string>) => {
@@ -106,14 +134,31 @@ const taskSlice = createSlice({
       })
       .addCase(createTask.fulfilled, (state, action) => {
         state.tasks.push(action.payload);
+      })
+      .addCase(updateTask.fulfilled, (state, action) => {
+        const index = state.tasks.findIndex(
+          (task) => task.id === action.payload.id,
+        );
+        if (index !== -1) {
+          state.tasks[index] = action.payload;
+        }
+      })
+      .addCase(updateTask.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+      })
+      .addCase(deleteTask.rejected, (state, action) => {
+        state.error = action.payload as string;
       });
   },
 });
 
 export const {
   addTask,
-  updateTask,
-  deleteTask,
+  updateTaskLocally,
+  deleteTaskLocally,
   connectToSocket,
   disconnectFromSocket,
 } = taskSlice.actions;
