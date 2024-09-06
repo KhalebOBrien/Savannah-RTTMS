@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../../api';
 
 interface Task {
   id: string;
@@ -20,15 +20,11 @@ const initialState: TaskState = {
   error: null,
 };
 
-// Fetch tasks
 export const fetchTasks = createAsyncThunk(
   'tasks/fetchTasks',
   async (_, { getState, rejectWithValue }) => {
     try {
-      const token = (getState() as any).auth.token;
-      const response = await axios.get('/api/tasks', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/tasks');
       return response.data.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -38,15 +34,11 @@ export const fetchTasks = createAsyncThunk(
   },
 );
 
-// Create task
 export const createTask = createAsyncThunk(
   'tasks/createTask',
-  async (task: Task, { getState, rejectWithValue }) => {
+  async (task: Task, { rejectWithValue }) => {
     try {
-      const token = (getState() as any).auth.token;
-      const response = await axios.post('/api/tasks', task, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.post('/tasks', task);
       return response.data.data.task;
     } catch (error: any) {
       return rejectWithValue(
