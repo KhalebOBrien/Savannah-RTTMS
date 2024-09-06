@@ -1,0 +1,20 @@
+FROM node:20 AS build
+
+WORKDIR /app
+
+COPY backend ./backend
+COPY frontend ./frontend
+
+WORKDIR /app/backend
+RUN yarn
+
+WORKDIR /app/frontend
+RUN yarn
+RUN yarn build
+
+# Set the working directory to the backend for running the application
+WORKDIR /app/backend
+
+EXPOSE 3000
+
+CMD ["yarn", "start"]
