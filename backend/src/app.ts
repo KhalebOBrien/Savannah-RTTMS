@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+import cors from 'cors';
 import AuthRoutes from './infrastructure/http/routes/AuthRoutes';
 import TaskRoutes from './infrastructure/http/routes/TaskRoutes';
 
@@ -17,6 +18,8 @@ const io = new SocketIOServer(server, {
 });
 
 app.use(express.json());
+app.use(cors());
+app.options('*', cors());
 
 io.on('connection', (socket) => {
   console.log('New WebSocket connection');

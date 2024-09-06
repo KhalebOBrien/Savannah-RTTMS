@@ -246,5 +246,3 @@ This project follows **Hexagonal Architecture** (also known as Ports and Adapter
    - This system does not currently support file uploads or attachments for tasks.
 
 ---
-
-Feel free to extend this project as necessary based on your specific requirements!
