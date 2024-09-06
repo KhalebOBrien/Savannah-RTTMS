@@ -15,8 +15,12 @@ let authService: AuthService;
 describe('AuthService', () => {
   beforeEach(() => {
     authService = new AuthService(mockUserRepository as any);
+
+    // @ts-ignore: Ignore TypeScript error for mocking bcrypt.hash
     vi.spyOn(bcrypt, 'hash').mockResolvedValue('hashed-password');
+    // @ts-ignore
     vi.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+    // @ts-ignore
     vi.spyOn(jwt, 'sign').mockReturnValue('fake-jwt-token');
   });
 
@@ -85,6 +89,7 @@ describe('AuthService', () => {
 
     mockUserRepository.findByEmail.mockResolvedValue(mockUser);
 
+    // @ts-ignore
     bcrypt.compare.mockResolvedValue(true);
 
     const token = await authService.login('test@example.com', 'password123');
@@ -124,6 +129,7 @@ describe('AuthService', () => {
 
     mockUserRepository.findByEmail.mockResolvedValue(mockUser);
 
+    // @ts-ignore
     bcrypt.compare.mockResolvedValue(false);
 
     await expect(
