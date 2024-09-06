@@ -78,7 +78,7 @@ const TaskList: React.FC = () => {
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-green text-lightBlack px-4 py-2 rounded"
         >
           Create Task
         </button>
@@ -115,13 +115,13 @@ const TaskList: React.FC = () => {
                 </div>
                 <button
                   onClick={() => handleUpdateTask(task.id)}
-                  className="bg-green-500 text-white px-4 py-2 rounded mr-2"
+                  className="bg-green text-lightBlack px-4 py-2 rounded mr-2"
                 >
                   Save
                 </button>
                 <button
                   onClick={() => setEditableTaskId(null)}
-                  className="bg-gray-500 text-white px-4 py-2 rounded"
+                  className="bg-gray text-white px-4 py-2 rounded"
                 >
                   Cancel
                 </button>

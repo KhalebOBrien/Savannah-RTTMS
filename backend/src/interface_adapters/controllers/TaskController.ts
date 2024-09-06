@@ -11,9 +11,9 @@ export class TaskController {
 
   async createTask(req: Request, res: Response): Promise<Response | void> {
     const { title, description, completed } = req.body;
-    const { userId } = res.locals.user;
+    const { id } = res.locals.user;
     try {
-      const task = new Task('', title, description, completed, userId);
+      const task = new Task('', title, description, completed, id);
       const createdTask = await this.taskService.createTask(task);
 
       return res
@@ -75,10 +75,10 @@ export class TaskController {
   }
 
   async getTasksByUser(req: Request, res: Response): Promise<Response | void> {
-    const { userId } = res.locals.user;
+    const { id } = res.locals.user;
 
     try {
-      const tasks = await this.taskService.getTasksByUserId(userId);
+      const tasks = await this.taskService.getTasksByUserId(id);
       return res.status(StatusCodes.OK).json(apiResponse('success', '', tasks));
     } catch (error) {
       ErrorHnadler.handleError(error, req, res);
