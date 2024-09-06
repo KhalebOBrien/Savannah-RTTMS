@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api';
+import { disconnectFromSocket } from './taskSlice';
 
 interface AuthState {
   token: string | null;
@@ -62,6 +63,14 @@ export const register = createAsyncThunk(
   },
 );
 
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (_, { dispatch }) => {
+    localStorage.removeItem('token');
+    dispatch(disconnectFromSocket());
+  },
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -99,9 +108,12 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.token = null;
+        state.isAuthenticated = false;
       });
   },
 });
 
-export const { logout } = authSlice.actions;
 export default authSlice.reducer;
