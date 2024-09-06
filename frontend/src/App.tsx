@@ -1,17 +1,13 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './components/Login';
-import TaskList from './components/TaskList';
-import './App.css';
+import { BrowserRouter } from 'react-router-dom';
+import './theme/index.css';
+import AppRouter from './routes/AppRouter';
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/tasks" element={<TaskList />} />
-      </Routes>
-    </Router>
+    <BrowserRouter>
+      <AppRouter />
+    </BrowserRouter>
   );
 };
 
