@@ -5,6 +5,7 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  connectToSocket,
 } from '../store/slices/taskSlice';
 import { AppDispatch, RootState } from '../store';
 import InputBox from '../components/InputBox';
@@ -16,6 +17,7 @@ const TaskList: React.FC = () => {
   const { tasks, loading, error } = useSelector(
     (state: RootState) => state.tasks,
   );
+  const token = useSelector((state: RootState) => state.auth.token);
 
   const [newTask, setNewTask] = useState({ title: '', description: '' });
   const [editableTaskId, setEditableTaskId] = useState<string | null>(null);
@@ -23,6 +25,7 @@ const TaskList: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchTasks());
+    dispatch(connectToSocket(token || ''));
   }, [dispatch]);
 
   const handleCreateTask = (e: React.FormEvent) => {
@@ -129,7 +132,7 @@ const TaskList: React.FC = () => {
                   <Button
                     text="Cancel"
                     type="button"
-                    classes="border border-white text-white bg-gray px-4 py-2"
+                    classes="bg-gray border border-white text-lightBlack px-4 py-2"
                     onClick={() => setEditableTaskId(null)}
                   />
                 </>

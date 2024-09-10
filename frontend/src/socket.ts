@@ -5,10 +5,25 @@ export const socket = io('http://localhost:1543', {
 });
 
 export const connectSocket = (token: string) => {
-  socket.auth = { token };
-  socket.connect();
+  if (socket.connected) {
+    console.log('Socket is already connected');
+    return;
+  }
+
+  if (token) {
+    socket.auth = { token };
+    socket.connect();
+    return;
+  }
+
+  console.log('Unauthorized for websocket');
 };
 
 export const disconnectSocket = () => {
-  socket.disconnect();
+  if (socket.connected) {
+    socket.disconnect();
+    console.log('Socket disconnected');
+  } else {
+    console.log('No active socket connection to disconnect');
+  }
 };

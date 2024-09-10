@@ -14,7 +14,7 @@ const Button = (props: Props): JSX.Element => {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-2 rounded-lg bg-green ${classes}`}
+      className={`px-3 py-2 rounded-lg ${classes} bg-green`}
       type={type ?? `button`}
     >
       {isLoading && <LoadingWheel />}
