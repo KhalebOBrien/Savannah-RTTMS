@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../store/slices/authSlice';
-import { connectToSocket } from '../store/slices/taskSlice';
 import { AppDispatch, RootState } from '../store';
 import LayoutWrapper from '../components/Layout';
 import InputBox from '../components/InputBox';
@@ -27,8 +26,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = await dispatch(login({ email, password })).unwrap();
-      dispatch(connectToSocket(token));
+      await dispatch(login({ email, password })).unwrap();
 
       if (isAuthenticated) {
         navigate(routes.TASKS_PAGE);

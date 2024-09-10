@@ -1,4 +1,11 @@
 import { io } from 'socket.io-client';
+import { store } from './store';
+import {
+  addTask,
+  deleteTaskLocally,
+  Task,
+  updateTaskLocally,
+} from './store/slices/taskSlice';
 
 export const socket = io('http://localhost:1543', {
   autoConnect: false,
@@ -26,4 +33,22 @@ export const disconnectSocket = () => {
   } else {
     console.log('No active socket connection to disconnect');
   }
+};
+
+export const listenToSocketEvents = () => {
+  socket.off('taskCreated');
+  socket.off('taskUpdated');
+  socket.off('taskDeleted');
+
+  socket.on('taskCreated', (task: Task) => {
+    store.dispatch(addTask(task));
+  });
+
+  socket.on('taskUpdated', (updatedTask: Task) => {
+    store.dispatch(updateTaskLocally(updatedTask));
+  });
+
+  socket.on('taskDeleted', (deletedTask: { id: string }) => {
+    store.dispatch(deleteTaskLocally(deletedTask.id));
+  });
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../store/slices/authSlice';
-import { connectToSocket } from '../store/slices/taskSlice';
 import { AppDispatch, RootState } from '../store';
 import LayoutWrapper from '../components/Layout';
 import InputBox from '../components/InputBox';
@@ -32,7 +31,6 @@ const Register: React.FC = () => {
       const token = await dispatch(
         register({ username, email, password }),
       ).unwrap();
-      dispatch(connectToSocket(token));
     } catch (error) {
       console.error(error);
     }

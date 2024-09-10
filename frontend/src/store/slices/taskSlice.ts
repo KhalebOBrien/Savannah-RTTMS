@@ -1,8 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import api from '../../api';
-import { socket, connectSocket, disconnectSocket } from '../../socket';
+import {
+  connectSocket,
+  disconnectSocket,
+  listenToSocketEvents,
+} from '../../socket';
 
-interface Task {
+export interface Task {
   id: string;
   title: string;
   description: string;
@@ -82,7 +86,7 @@ const taskSlice = createSlice({
   initialState,
   reducers: {
     addTask: (state, action: PayloadAction<Task>) => {
-      state.tasks.push(action.payload);
+      state.tasks.unshift(action.payload);
     },
     updateTaskLocally: (state, action: PayloadAction<Task>) => {
       const index = state.tasks.findIndex(
@@ -95,28 +99,9 @@ const taskSlice = createSlice({
     deleteTaskLocally: (state, action: PayloadAction<string>) => {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
     },
-    connectToSocket: (state, action: PayloadAction<string>) => {
+    connectToSocket: (_state, action: PayloadAction<string>) => {
       connectSocket(action.payload);
-
-      socket.on('taskCreated', (task: Task) => {
-        console.log('received created task');
-        state.tasks.push(task);
-      });
-
-      socket.on('taskUpdated', (updatedTask: Task) => {
-        console.log('received updated task');
-        const index = state.tasks.findIndex(
-          (task) => task.id === updatedTask.id,
-        );
-        if (index !== -1) {
-          state.tasks[index] = updatedTask;
-        }
-      });
-
-      socket.on('taskDeleted', (deletedTask: { id: string }) => {
-        console.log('received deleted task');
-        state.tasks = state.tasks.filter((task) => task.id !== deletedTask.id);
-      });
+      listenToSocketEvents();
     },
     disconnectFromSocket: () => {
       disconnectSocket();
@@ -135,22 +120,11 @@ const taskSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(createTask.fulfilled, (state, action) => {
-        state.tasks.push(action.payload);
-      })
-      .addCase(updateTask.fulfilled, (state, action) => {
-        const index = state.tasks.findIndex(
-          (task) => task.id === action.payload.id,
-        );
-        if (index !== -1) {
-          state.tasks[index] = action.payload;
-        }
+      .addCase(createTask.rejected, (state, action) => {
+        state.error = action.payload as string;
       })
       .addCase(updateTask.rejected, (state, action) => {
         state.error = action.payload as string;
-      })
-      .addCase(deleteTask.fulfilled, (state, action) => {
-        state.tasks = state.tasks.filter((task) => task.id !== action.payload);
       })
       .addCase(deleteTask.rejected, (state, action) => {
         state.error = action.payload as string;
