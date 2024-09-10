@@ -26,9 +26,9 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await dispatch(login({ email, password })).unwrap();
+      const token = await dispatch(login({ email, password })).unwrap();
 
-      if (isAuthenticated) {
+      if (token) {
         navigate(routes.TASKS_PAGE);
       }
     } catch (error) {
