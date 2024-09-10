@@ -31,6 +31,10 @@ const Register: React.FC = () => {
       const token = await dispatch(
         register({ username, email, password }),
       ).unwrap();
+
+      if (token) {
+        navigate(routes.TASKS_PAGE);
+      }
     } catch (error) {
       console.error(error);
     }
