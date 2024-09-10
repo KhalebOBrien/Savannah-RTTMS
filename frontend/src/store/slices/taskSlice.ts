@@ -40,7 +40,7 @@ export const createTask = createAsyncThunk(
   async (task: Omit<Task, 'id'>, { rejectWithValue }) => {
     try {
       const response = await api.post('/tasks', task);
-      return response.data.data.task;
+      return response.data.data;
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || 'Failed to create task',
@@ -54,7 +54,7 @@ export const updateTask = createAsyncThunk(
   async (task: Task, { rejectWithValue }) => {
     try {
       const response = await api.put(`/tasks/${task.id}`, task);
-      return response.data.data.task;
+      return response.data.data;
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || 'Failed to update task',
@@ -99,10 +99,12 @@ const taskSlice = createSlice({
       connectSocket(action.payload);
 
       socket.on('taskCreated', (task: Task) => {
+        console.log('received created task');
         state.tasks.push(task);
       });
 
       socket.on('taskUpdated', (updatedTask: Task) => {
+        console.log('received updated task');
         const index = state.tasks.findIndex(
           (task) => task.id === updatedTask.id,
         );
@@ -112,6 +114,7 @@ const taskSlice = createSlice({
       });
 
       socket.on('taskDeleted', (deletedTask: { id: string }) => {
+        console.log('received deleted task');
         state.tasks = state.tasks.filter((task) => task.id !== deletedTask.id);
       });
     },

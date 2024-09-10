@@ -46,7 +46,7 @@ const TaskList: React.FC = () => {
         completed: false,
       }),
     );
-    setEditableTaskId(null); // Close the edit form
+    setEditableTaskId(null);
   };
 
   const handleDeleteTask = (taskId: string) => {
