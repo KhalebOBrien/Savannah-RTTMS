@@ -1,4 +1,5 @@
 import axios from 'axios';
+import routes from '../routes/routes';
 
 const api = axios.create({
   baseURL: 'http://localhost:1543/api/v1',
@@ -19,7 +20,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      window.location.href = routes.LOGIN_PAGE;
     }
     return Promise.reject(error);
   },

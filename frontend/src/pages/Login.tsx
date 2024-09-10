@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../store/slices/authSlice';
 import { connectToSocket } from '../store/slices/taskSlice';
@@ -17,6 +17,12 @@ const Login: React.FC = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated,
   );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(routes.TASKS_PAGE);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

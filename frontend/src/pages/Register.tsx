@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../store/slices/authSlice';
 import { connectToSocket } from '../store/slices/taskSlice';
-import { AppDispatch } from '../store';
+import { AppDispatch, RootState } from '../store';
 import LayoutWrapper from '../components/Layout';
 import InputBox from '../components/InputBox';
 import Button from '../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import routes from '../routes/routes';
 
 const Register: React.FC = () => {
@@ -15,6 +15,16 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated,
+  );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(routes.TASKS_PAGE);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
